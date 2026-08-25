@@ -11,17 +11,30 @@ Skills are packaged instructions that extend coding agents with domain-specific 
 | [go-conventions](skills/go-conventions) | Opinionated conventions for writing idiomatic, consistent Go code — package architecture, error handling, formatting, and testing (including synctest and mockgen). |
 | [pr](skills/pr)                         | Manages GitHub PRs for the current branch: create, and update.                                                                                                      |
 
-## Usage
+## Installation
 
-Clone this repo and symlink (or copy) the skills you want into your agent skills directory:
+Use the [Agent Skills](https://www.skills.sh/) CLI:
 
-```sh
-git clone https://github.com/loderunner/agent-skills.git
-ln -s "$(pwd)/agent-skills/skills/go-conventions" ~/.agents/skills/go-conventions
+```shell
+npx skills add loderunner/agent-skills
 ```
 
-The agent will automatically pick up skills placed under `~/.agents/skills/` (or a project's `.agents/skills/`) and invoke them when their description matches the task at hand.
+or install a specific skill:
 
-## Adding a skill
+```shell
+npx skills add loderunner/agent-skills --skill <skill_name>
+```
 
-Each skill lives in its own directory under `skills/` and contains a `SKILL.md` file with YAML frontmatter (`name`, `description`) followed by the skill's instructions. See the existing skills for examples.
+## Usage
+
+The coding agent will automatically load skills when it detects a relevant task.
+
+```
+❯ Write a Go function to parse the config file
+```
+
+In some agents, you can force a skill to load by mentioning it with a `/`.
+
+```
+❯ /pr create
+```
