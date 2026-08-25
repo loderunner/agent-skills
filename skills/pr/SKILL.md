@@ -6,7 +6,7 @@ description: Manages GitHub PRs for the current branch. Use for creating new PRs
 
 # PR Skill
 
-Three sub-commands: `create`, `update`, `rebase`. Identify which the user wants from their message.
+Two sub-commands: `create`, `update`. Identify which the user wants from their message.
 
 ---
 
@@ -88,7 +88,7 @@ When a rebase or merge produces conflicts:
 
 ## PR Body Guidelines
 
-**Always lead with the *why*** — the reason the PR exists, the problem it solves, or the goal it achieves. Never open with what the code does or how it is structured.
+**Always lead with the _why_** — the reason the PR exists, the problem it solves, or the goal it achieves. Never open with what the code does or how it is structured.
 
 **Do not wrap lines.** GitHub Markdown renders newlines as line breaks, unlike standard Markdown renderers. Write each paragraph as a single unbroken line, and separate paragraphs with a blank line.
 
