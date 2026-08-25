@@ -1,31 +1,27 @@
 # Agent Skills
 
-Personal [Agent Skills](https://docs.claude.com/en/docs/claude-code/skills) for [Claude Code](https://claude.com/claude-code), maintained by [loderunner](https://github.com/loderunner).
+Personal [Agent Skills](https://agentskills.io/) for coding agents, maintained by [loderunner](https://github.com/loderunner).
 
-Skills are packaged instructions that extend Claude Code with domain-specific workflows and conventions. Claude loads a skill's instructions on demand when a task matches its description.
+Skills are packaged instructions that extend coding agents with domain-specific workflows and conventions. Agents load a skill's instructions on demand when a task matches its description.
 
 ## Skills
 
-| Skill | Description |
-| --- | --- |
+| Skill                                   | Description                                                                                                                                                         |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [go-conventions](skills/go-conventions) | Opinionated conventions for writing idiomatic, consistent Go code — package architecture, error handling, formatting, and testing (including synctest and mockgen). |
-| [pr](skills/pr) | Manages GitHub PRs for the current branch: create, update, and rebase. |
+| [pr](skills/pr)                         | Manages GitHub PRs for the current branch: create, and update.                                                                                                      |
 
 ## Usage
 
-Clone this repo and symlink (or copy) the skills you want into your Claude Code skills directory:
+Clone this repo and symlink (or copy) the skills you want into your agent skills directory:
 
 ```sh
 git clone https://github.com/loderunner/agent-skills.git
-ln -s "$(pwd)/agent-skills/skills/go-conventions" ~/.claude/skills/go-conventions
+ln -s "$(pwd)/agent-skills/skills/go-conventions" ~/.agents/skills/go-conventions
 ```
 
-Claude Code will automatically pick up skills placed under `~/.claude/skills/` (or a project's `.claude/skills/`) and invoke them when their description matches the task at hand.
+The agent will automatically pick up skills placed under `~/.agents/skills/` (or a project's `.agents/skills/`) and invoke them when their description matches the task at hand.
 
 ## Adding a skill
 
 Each skill lives in its own directory under `skills/` and contains a `SKILL.md` file with YAML frontmatter (`name`, `description`) followed by the skill's instructions. See the existing skills for examples.
-
-## License
-
-MIT
