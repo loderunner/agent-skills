@@ -10,6 +10,7 @@ Skills are packaged instructions that extend coding agents with domain-specific 
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [go-conventions](skills/go-conventions) | Opinionated conventions for writing idiomatic, consistent Go code — package architecture, error handling, formatting, and testing (including synctest and mockgen). |
 | [pr](skills/pr)                         | Manages GitHub PRs for the current branch: create, and update.                                                                                                      |
+| [tutorial](skills/tutorial)             | Teaches a technology or codebase as a hands-on course: prepares a verified reference build and chapter TOC, then delivers it one small increment at a time.         |
 
 ## Installation
 
