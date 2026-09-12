@@ -15,7 +15,19 @@ A syllabus written from memory looks fine and falls apart in chapter six, when t
 
 ## Phase 0 — scope it
 
-Before building, ask two to four questions, and only the ones where guessing wrong means rebuilding. Good candidates: a fork in the architecture (sync or async, REST or gRPC), which hard case to feature, where a cross-cutting concern like testing lives. Bad candidates: anything you can decide yourself and mention later.
+Before building, settle who the course is for and how it should feel to sit through. Three things do most of the work here, and building without them means guessing at decisions that are really the learner's to make:
+
+- **Reader level** — beginner, intermediate, expert, or something more specific ("knows Python but not async", "senior backend engineer new to this ecosystem"). This sets how much you can assume and how much groundwork each section needs to lay before it gets to the point.
+- **Pace** — crash course, in-depth, overview, cheat sheet, primer, refresher, or whatever the learner actually wants. This sets how many chapters exist and how deep each one goes — a refresher and an in-depth course on the same technology aren't the same course shortened, they're different tables of contents.
+- **Tone** — hands-on, conceptual, educative, Q&A-style, or some other feel. This shapes how each section gets written up later, in `deliver.md`, once teaching starts.
+
+These three examples aren't an exhaustive menu — a request can express level, pace, or tone in its own words, and that's just as good as matching one of the labels above. Read the request and its surrounding context first and infer what's reasonably implied: "a crash course on FastAPI for someone who already knows Flask" settles pace and level in one sentence; "walk me through X and quiz me as we go" settles tone. Don't ask about something the request already answered.
+
+If, after that read, one or more of the three is still genuinely unclear, ask before building. This is worth doing even though it adds a step: a course built on the wrong guess about level or pace is a course that gets rebuilt, for the same reason a wrong architecture fork does. Ask only about what's actually missing — don't turn it into a three-question survey when context already settled two of the three.
+
+Reach for a structured question tool to do the asking, not a plain message. `AskUserQuestion` is the one to look for; if this environment doesn't expose it under that name, check the available tools for whatever else is built for putting a multiple-choice or short-answer question to the user — the same idea can show up under a different name depending on where this skill is running. Only when no such tool exists at all should the question go out as ordinary text in the conversation instead — that's the fallback, not the default.
+
+Once level, pace, and tone are settled, ask two to four more questions, and only the ones where guessing wrong means rebuilding. Good candidates: a fork in the architecture (sync or async, REST or gRPC), which hard case to feature, where a cross-cutting concern like testing lives. Bad candidates: anything you can decide yourself and mention later.
 
 Settle what is deliberately **out** of scope, and say so. A course that also covers auth, logging, deployment and CI teaches none of them well. Cutting them is the decision that makes the rest teachable.
 
