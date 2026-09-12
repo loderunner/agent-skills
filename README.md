@@ -26,6 +26,22 @@ or install a specific skill:
 npx skills add loderunner/agent-skills --skill <skill_name>
 ```
 
+### Claude Code plugin marketplace
+
+This repo is also a [Claude Code plugin marketplace](https://docs.claude.com/en/docs/claude-code/plugin-marketplaces). Add it and install the plugin from inside Claude Code:
+
+```
+/plugin marketplace add loderunner/agent-skills
+/plugin install agent-skills@agent-skills
+```
+
+or from the command line:
+
+```shell
+claude plugin marketplace add loderunner/agent-skills
+claude plugin install agent-skills@agent-skills
+```
+
 ## Usage
 
 The coding agent will automatically load skills when it detects a relevant task.
