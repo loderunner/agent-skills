@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "agent-skills",
+  "description": "Personal agent skills for coding agents: Go conventions, PR management, and tutorial generation.",
+  "version": "1.0.0",
+  "author": {
+    "name": "loderunner",
+    "url": "https://github.com/loderunner"
+  },
+  "homepage": "https://github.com/loderunner/agent-skills",
+  "repository": "https://github.com/loderunner/agent-skills",
+  "license": "MIT",
+  "keywords": ["skills", "go", "pr", "tutorial"]
+}

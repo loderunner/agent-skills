@@ -1,0 +1,14 @@
+{
+  "name": "agent-skills",
+  "owner": {
+    "name": "loderunner",
+    "url": "https://github.com/loderunner"
+  },
+  "plugins": [
+    {
+      "name": "agent-skills",
+      "source": "./",
+      "description": "Personal agent skills for coding agents: Go conventions, PR management, and tutorial generation."
+    }
+  ]
+}
