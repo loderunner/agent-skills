@@ -16,27 +16,31 @@ Create a new pull request for the current branch.
 
 ### Steps
 
-1. Check if the local repo is on the default branch:
+1. Check for uncommitted changes: `git status --porcelain`
+   - If any exist (staged or unstaged), commit them before proceeding:
+     - Derive a commit message from the diff (`git diff HEAD`); if the intent isn't clear from the diff alone, ask the user — use a dedicated user-input tool if one is available in your runtime (e.g. `AskUserQuestion`, `human_input`, `interrupt`), otherwise pause and ask directly in your response
+     - `git add -A` then `git commit -m "..."`
+2. Check if the local repo is on the default branch:
    - Get the default branch: `git remote show origin | grep 'HEAD branch' | awk '{print $NF}'`
    - Get the current branch: `git branch --show-current`
    - If they match, create a new branch before proceeding:
-     - Derive a branch name from staged/committed changes or ask the user
+     - Derive a branch name from the committed changes or ask the user
      - `git checkout -b <branch-name>`
      - `git push -u origin <branch-name>`
-2. Detect the base branch:
+3. Detect the base branch:
    - Try `gh pr view --json baseRefName --jq '.baseRefName'` (works if a draft PR exists)
    - Fallback: `git remote show origin | grep 'HEAD branch' | awk '{print $NF}'`
    - Final fallback: `origin/main`
-3. Get the base commit: `git merge-base HEAD <base-branch>`
-4. Analyze scope:
+4. Get the base commit: `git merge-base HEAD <base-branch>`
+5. Analyze scope:
    - `git log <base-commit>...HEAD --oneline`
    - `git diff <base-commit>...HEAD --stat`
-5. Check the repo's commit style for tone/format reference: `git log <base-branch> -10 --oneline`
-6. Determine PR complexity using the signals below
-7. Draft a PR title and body using the guidelines below
+6. Check the repo's commit style for tone/format reference: `git log <base-branch> -10 --oneline`
+7. Determine PR complexity using the signals below
+8. Draft a PR title and body using the guidelines below
    - If context is incomplete or cannot be inferred from the repo state (e.g. the purpose of the change is unclear, commit messages are uninformative, or the scope is ambiguous), ask the user for clarification before drafting — use a dedicated user-input tool if one is available in your runtime (e.g. `AskUserQuestion`, `human_input`, `interrupt`), otherwise pause and ask directly in your response
-8. Create with: `gh pr create --title "..." --body "$(cat <<'EOF'\n...\nEOF\n)"`
-9. Open the PR in the browser: `gh pr view --web`
+9. Create with: `gh pr create --title "..." --body "$(cat <<'EOF'\n...\nEOF\n)"`
+10. Open the PR in the browser: `gh pr view --web`
 
 ---
 
@@ -47,22 +51,26 @@ Update an existing open PR on the current branch — sync with the target branch
 ### Steps
 
 1. Verify a PR exists: `gh pr view` (exit with a clear message if none)
-2. Get the PR's base branch: `gh pr view --json baseRefName --jq '.baseRefName'`
-3. Fetch the latest remote state: `git fetch origin`
-4. Check how the branch relates to the base:
+2. Check for uncommitted changes: `git status --porcelain`
+   - If any exist (staged or unstaged), commit them before proceeding:
+     - Derive a commit message from the diff (`git diff HEAD`); if the intent isn't clear from the diff alone, ask the user — use a dedicated user-input tool if one is available in your runtime (e.g. `AskUserQuestion`, `human_input`, `interrupt`), otherwise pause and ask directly in your response
+     - `git add -A` then `git commit -m "..."`
+3. Get the PR's base branch: `gh pr view --json baseRefName --jq '.baseRefName'`
+4. Fetch the latest remote state: `git fetch origin`
+5. Check how the branch relates to the base:
    - Commits behind: `git rev-list --count HEAD..origin/<base-branch>`
    - Commits ahead: `git rev-list --count origin/<base-branch>..HEAD`
-5. If the branch is behind, sync it — prefer rebase to keep history linear:
+6. If the branch is behind, sync it — prefer rebase to keep history linear:
    - `git rebase origin/<base-branch>`
    - If rebase fails due to conflicts, see **Conflict handling** below
    - If rebase would be clearly wrong (e.g. merge commits on the branch), fall back to `git merge origin/<base-branch>`
-6. Push: `git push` (use `git push --force-with-lease` if a rebase was performed)
-7. Get base commit: `git merge-base HEAD origin/<base-branch>`
-8. Analyze scope: `git log <base-commit>...HEAD --oneline` + `git diff <base-commit>...HEAD --stat`
-9. Fetch current PR title and body: `gh pr view --json title,body`
-10. Draft updated title + body
+7. Push: `git push` (use `git push --force-with-lease` if a rebase was performed)
+8. Get base commit: `git merge-base HEAD origin/<base-branch>`
+9. Analyze scope: `git log <base-commit>...HEAD --oneline` + `git diff <base-commit>...HEAD --stat`
+10. Fetch current PR title and body: `gh pr view --json title,body`
+11. Draft updated title + body
     - If the new commits don't make the intent clear or the update scope is ambiguous, ask the user before drafting — use a dedicated user-input tool if one is available in your runtime (e.g. `AskUserQuestion`, `human_input`, `interrupt`), otherwise pause and ask directly in your response
-11. Apply: `gh pr edit --title "..." --body "$(cat <<'EOF'\n...\nEOF\n)"`
+12. Apply: `gh pr edit --title "..." --body "$(cat <<'EOF'\n...\nEOF\n)"`
 
 ### Conflict handling
 
