@@ -4,6 +4,15 @@ Personal [Agent Skills](https://agentskills.io/) for coding agents, maintained b
 
 Skills are packaged instructions that extend coding agents with domain-specific workflows and conventions. Agents load a skill's instructions on demand when a task matches its description.
 
+## Contents
+
+- [Skills](#skills)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [go-conventions](#go-conventions)
+  - [pr](#pr)
+  - [tutorial](#tutorial)
+
 ## Skills
 
 | Skill                                   | Description                                                                                                                                                         |
@@ -44,14 +53,48 @@ claude plugin install agent-skills@agent-skills
 
 ## Usage
 
-The coding agent will automatically load skills when it detects a relevant task.
+The coding agent will automatically load skills when it detects a relevant task. In some agents, you can also force a skill to load by mentioning it with a `/`.
 
-```
-❯ Write a Go function to parse the config file
-```
+### go-conventions
 
-In some agents, you can force a skill to load by mentioning it with a `/`.
+Applies automatically whenever you write, review, or refactor Go code — no invocation needed. It covers formatting, error handling, package architecture, and testing conventions (including `synctest` and `mockgen`), with deeper guidance in the skill's `references/` files for architecture, database access, testing, and timestamps.
+
+### pr
+
+Manages GitHub PRs for the current branch, with two sub-commands:
 
 ```
 ❯ /pr create
 ```
+
+Commits any uncommitted changes, creates and pushes a branch if you're still on the default branch, then drafts a PR body from the branch's commits and diff and opens the PR.
+
+```
+❯ /pr update
+```
+
+Commits any uncommitted changes, rebases onto the base branch if it's moved (falling back to a merge, or stopping to ask if there's a real conflict), pushes, then refreshes the PR's title and description.
+
+### tutorial
+
+Teaches a technology, stack, or unfamiliar codebase as a hands-on course, in two phases that are usually separate sessions: **prepare**, then **deliver**.
+
+#### Prepare
+
+Takes a course request, plus your reader level, pace, and tone if not already implied by it:
+
+```
+❯ /tutorial Design a crash course on FastAPI for someone who already knows Flask
+```
+
+Produces two artifacts, saved somewhere durable (a repo file, a project doc): a **chapter-and-section table of contents**, and a **reference implementation** the course is built from.
+
+#### Deliver
+
+Takes that TOC and reference implementation — from an earlier prepare, or already present in the repo or conversation — plus which chapter to teach:
+
+```
+❯ /tutorial Teach me chapter 3
+```
+
+Produces the chapter, one increment at a time, each requiring you to implement and try the code before it continues.
