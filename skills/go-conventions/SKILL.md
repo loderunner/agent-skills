@@ -1,6 +1,6 @@
 ---
 name: go-conventions
-description: This skill should be used when the user asks to "write Go code", "review Go code", "structure a Go package", "organize a Go project", "Go error handling", "Go testing conventions", "test concurrent Go code", "synctest", "mock a Go interface", "Go formatting", "format Go timestamps", or is otherwise writing, reviewing, or refactoring Go source files (`.go`). Provides opinionated general-purpose Go conventions for package architecture, error handling, formatting, testing (including synctest and mockgen), and timestamp handling — independent of any specific codebase.
+description: This skill should be used when the user asks to "write Go code", "review Go code", "structure a Go package", "organize a Go project", "Go error handling", "Go testing conventions", "test concurrent Go code", "synctest", "mock a Go interface", "Go formatting", "format Go timestamps", "validate input", "sanitize output", or is otherwise writing, reviewing, or refactoring Go source files (`.go`). Provides opinionated general-purpose Go conventions for package architecture, error handling, formatting, testing (including synctest and mockgen), and timestamp handling — independent of any specific codebase.
 ---
 
 # Go Conventions
@@ -175,10 +175,12 @@ func Write(w io.Writer, buf []byte) error {
 Larger topics live in `references/` to keep this file lean. Load the
 relevant file when the task touches that area:
 
-- **`references/architecture.md`** — vertical package organization by
-  feature, when a shared/infrastructure package is justified, dependency
-  injection via constructors, `internal/` package usage, and disambiguating
-  same-named types across packages.
+- **`references/architecture.md`** — general patterns (vertical package
+  organization by feature, when a shared package is justified, dependency
+  injection via constructors, disambiguating same-named types, `internal/`
+  usage, validating what comes in and sanitizing what goes out), then
+  backend-service specifics (handler + `store/` layout, shared service
+  infrastructure, request-scoped context values, request/response types).
 - **`references/database.md`** — a recommended default `store` interface +
   DB-backed implementation pattern for persistence code, splitting query
   files by entity, and generating UUIDs in application code vs. letting the
