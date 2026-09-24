@@ -228,3 +228,119 @@ a validator), then convert it to domain types before calling into the
 feature's logic. Respond through a dedicated response type built from the
 result. Never marshal a `store` row or domain struct directly into a
 response.
+
+### Handlers translate HTTP, then delegate
+
+An HTTP handler translates between HTTP and the application, and does
+nothing else. It works in this order:
+
+1. **Authenticate and authorize**, unless middleware already does it.
+2. **Collect the HTTP framing**: path, path params, query variables,
+   headers, request body.
+3. **Parse and validate the input** (see "Request and response boundaries"
+   above).
+4. **Delegate** the actual work to deeper layers.
+5. **Collect the results** of those calls.
+6. **Write the response**: status code, headers and payload.
+
+Keeping HTTP in one layer means nothing below the handler imports
+`net/http`. The same logic can then be called from an RPC handler, a CLI, a
+queue worker or a test without faking a request. It also means the whole
+HTTP contract of an endpoint is readable in one function.
+
+#### Where orchestration lives depends on the size of the service
+
+In a simple service, the handler can do the orchestration itself: call the
+store, then a client, then the store again. The sequence is short, and a
+separate layer would only add indirection.
+
+In a larger service, move the orchestration to an intermediate layer, so
+the handler goes back to being pure translation: it calls one method and
+translates what comes back. That layer knows nothing about HTTP. It takes
+and returns domain types, and it reports failures as errors, never as
+status codes. Name and place it however the project already does. A good
+sign it's time to extract it is when the orchestration spans several
+dependencies, or when a second entry point needs the same sequence.
+
+#### Deeper layers report what happened; the handler picks the status code
+
+Most status codes can be decided in the handler, from information it
+already has: 400 for input that doesn't parse or validate, 401 for a
+missing or invalid identity, 403 for a caller who isn't allowed.
+
+When a status depends on something only a deeper layer knows (the record
+doesn't exist, the write conflicts with the current state), that layer
+returns a **package-level error**: an exported sentinel (`ErrNotFound`,
+`ErrConflict`), or an exported error type when the handler needs extra
+data. The handler interprets it with `errors.Is` / `errors.As` and chooses
+the status. Any error it doesn't recognize becomes a 500 with a generic
+body. The detail gets logged once, there, and not sent to the client (see
+"Sanitize on the way out").
+
+```go
+// package store
+var ErrNotFound = errors.New("not found")
+
+func (s *DBStore) GetOrder(ctx context.Context, id uuid.UUID) (OrderRow, error) {
+    // ...
+    if errors.Is(err, sql.ErrNoRows) {
+        return OrderRow{}, ErrNotFound
+    }
+    // ...
+}
+
+// package orders
+// ✅ GOOD: the handler translates; the store says what happened
+func (h *OrderHandler) Get(w http.ResponseWriter, r *http.Request) {
+    userID, ok := auth.UserID(r.Context())
+    if !ok {
+        http.Error(w, "unauthorized", http.StatusUnauthorized)
+        return
+    }
+
+    id, err := uuid.Parse(r.PathValue("id"))
+    if err != nil {
+        http.Error(w, "invalid order id", http.StatusBadRequest)
+        return
+    }
+
+    order, err := h.store.GetOrder(r.Context(), id)
+    switch {
+    case errors.Is(err, store.ErrNotFound):
+        http.Error(w, "order not found", http.StatusNotFound)
+        return
+    case err != nil:
+        h.log.Error("get order", "order_id", id, "err", err)
+        http.Error(w, "internal error", http.StatusInternalServerError)
+        return
+    }
+
+    if order.CustomerID != userID {
+        http.Error(w, "forbidden", http.StatusForbidden)
+        return
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+    err = json.NewEncoder(w).Encode(newOrderResponse(order))
+    if err != nil {
+        h.log.Error("encode order response", "order_id", id, "err", err)
+    }
+}
+```
+
+```go
+// ❌ BAD: the store speaks HTTP. It can't be reused outside a handler,
+// and the handler's HTTP contract is scattered across layers.
+func (s *DBStore) GetOrder(ctx context.Context, id uuid.UUID) (OrderRow, int, error) {
+    // ...
+    if errors.Is(err, sql.ErrNoRows) {
+        return OrderRow{}, http.StatusNotFound, err
+    }
+    // ...
+}
+```
+
+When several handlers in a feature map the same errors, pull the mapping
+into one function in the feature package (for example
+`writeError(w, err)`), so each error maps to the same status everywhere.

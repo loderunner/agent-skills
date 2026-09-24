@@ -11,7 +11,10 @@ database operations a `store/` subpackage containing:
   handle type)
 - **Query files** — named by entity: `queries_order.go`,
   `queries_customer.go`, or just `queries.go` when there is only one entity
-- **Row types and errors** — defined in the query file that produces them
+- **Row types and errors** — defined in the query file that produces them.
+  Expose domain outcomes (not found, conflict) as exported sentinel or typed
+  errors, never as HTTP status codes, so handlers can map them (see "Handlers
+  translate HTTP, then delegate" in `references/architecture.md`)
 
 Handlers should depend on `store.Store` (the interface), never directly on
 `*sql.DB`. Wire `store.NewDBStore(db)` once, near the top of the program,

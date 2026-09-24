@@ -1,6 +1,6 @@
 ---
 name: go-conventions
-description: This skill should be used when the user asks to "write Go code", "review Go code", "structure a Go package", "organize a Go project", "Go error handling", "Go testing conventions", "test concurrent Go code", "synctest", "mock a Go interface", "Go formatting", "format Go timestamps", "validate input", "sanitize output", or is otherwise writing, reviewing, or refactoring Go source files (`.go`). Provides opinionated general-purpose Go conventions for package architecture, error handling, formatting, testing (including synctest and mockgen), and timestamp handling — independent of any specific codebase.
+description: This skill should be used when the user asks to "write Go code", "review Go code", "structure a Go package", "organize a Go project", "Go error handling", "Go testing conventions", "test concurrent Go code", "synctest", "mock a Go interface", "Go formatting", "format Go timestamps", "validate input", "sanitize output", "write an HTTP handler", "map errors to status codes", or is otherwise writing, reviewing, or refactoring Go source files (`.go`). Provides opinionated general-purpose Go conventions for package architecture, error handling, formatting, testing (including synctest and mockgen), and timestamp handling — independent of any specific codebase.
 ---
 
 # Go Conventions
@@ -180,7 +180,9 @@ relevant file when the task touches that area:
   injection via constructors, disambiguating same-named types, `internal/`
   usage, validating what comes in and sanitizing what goes out), then
   backend-service specifics (handler + `store/` layout, shared service
-  infrastructure, request-scoped context values, request/response types).
+  infrastructure, request-scoped context values, request/response types,
+  what a handler does vs. delegates, and mapping package-level errors to
+  HTTP status codes).
 - **`references/database.md`** — a recommended default `store` interface +
   DB-backed implementation pattern for persistence code, splitting query
   files by entity, and generating UUIDs in application code vs. letting the
