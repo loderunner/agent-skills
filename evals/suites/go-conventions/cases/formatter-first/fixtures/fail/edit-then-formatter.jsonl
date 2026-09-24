@@ -1,0 +1,5 @@
+{"type": "system", "subtype": "init", "tools": ["Bash", "Edit", "Read"]}
+{"type": "assistant", "message": {"content": [{"type": "text", "text": "working"}, {"type": "tool_use", "name": "Read", "input": {"file_path": "report.go"}}]}}
+{"type": "assistant", "message": {"content": [{"type": "text", "text": "working"}, {"type": "tool_use", "name": "Edit", "input": {"file_path": "report.go", "old_string": "a", "new_string": "b"}}]}}
+{"type": "assistant", "message": {"content": [{"type": "text", "text": "working"}, {"type": "tool_use", "name": "Bash", "input": {"command": "gofmt -w ./..."}}]}}
+{"type": "result", "subtype": "success"}

@@ -1,0 +1,23 @@
+{
+  "name": "loderunner-skills-evals",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "tsx src/generate.ts",
+    "test": "vitest run --project bench",
+    "eval": "vitest run --project eval",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@typesafe-ai/sdk": "0.6.0",
+    "tree-sitter-go": "0.25.0",
+    "tsx": "4.23.15",
+    "vite": "^8.3.0",
+    "vitest": "5.0.1",
+    "web-tree-sitter": "0.27.0"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.2",
+    "typescript": "7.0.2"
+  }
+}

@@ -1,0 +1,4 @@
+{"type": "system", "subtype": "init", "tools": ["Bash", "Edit", "Read"]}
+{"type": "assistant", "message": {"content": [{"type": "tool_use", "name": "Bash", "input": {"command": "cat > report.go <<EOF\npackage report\nEOF"}}]}}
+{"type": "assistant", "message": {"content": [{"type": "tool_use", "name": "Bash", "input": {"command": "gofmt -w report.go"}}]}}
+{"type": "result", "subtype": "success"}
