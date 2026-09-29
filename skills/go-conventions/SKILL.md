@@ -1,6 +1,6 @@
 ---
 name: go-conventions
-description: This skill should be used when the user asks to "write Go code", "review Go code", "structure a Go package", "organize a Go project", "Go error handling", "Go testing conventions", "test concurrent Go code", "synctest", "mock a Go interface", "Go formatting", "format Go timestamps", "validate input", "sanitize output", "write an HTTP handler", "map errors to status codes", or is otherwise writing, reviewing, or refactoring Go source files (`.go`). Provides opinionated general-purpose Go conventions for package architecture, error handling, formatting, testing (including synctest and mockgen), and timestamp handling — independent of any specific codebase.
+description: This skill should be used when the user asks to "write Go code", "review Go code", "structure a Go package", "organize a Go project", "Go error handling", "Go testing conventions", "test concurrent Go code", "synctest", "mock a Go interface", "Go formatting", "format Go timestamps", "validate input", "sanitize output", "write an HTTP handler", "map errors to status codes", "write a doc comment", "write a README", "write documentation", "review docs tone", or is otherwise writing, reviewing, or refactoring Go source files (`.go`). Provides opinionated general-purpose Go conventions for package architecture, error handling, formatting, testing (including synctest and mockgen), timestamp handling, and documentation style — independent of any specific codebase.
 ---
 
 # Go Conventions
@@ -192,6 +192,13 @@ relevant file when the task touches that area:
   recommended default toolchain (`mockgen`, `go-sqlmock`, `testify`) for
   mocking and assertions, including a full reference table of `testify`
   semantic matchers.
+- **`references/documentation.md`** — tone and style for prose (doc
+  comments, READMEs, guides, PR text), distilled from the Google developer
+  documentation style guide: conversational tone, active voice and present
+  tense, timeless and non-excessive claims, `must`/`can` instead of `should`,
+  conditions-first sentence structure, headings, lists and procedures, code in
+  text, safe example data, and how these rules adapt to Go doc comments
+  (which start with the identifier's name).
 - **`references/timestamps.md`** — storing and formatting timestamps in Go
   applications: UTC discipline, `TIMESTAMP` vs `TIMESTAMPTZ`, and JSON
   timestamp formatting.

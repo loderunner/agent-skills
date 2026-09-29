@@ -57,7 +57,7 @@ The coding agent will automatically load skills when it detects a relevant task.
 
 ### go-conventions
 
-Applies automatically whenever you write, review, or refactor Go code — no invocation needed. It covers formatting, error handling, package architecture, and testing conventions (including `synctest` and `mockgen`), with deeper guidance in the skill's `references/` files for architecture, database access, testing, and timestamps.
+Applies automatically whenever you write, review, or refactor Go code — no invocation needed. It covers formatting, error handling, package architecture, and testing conventions (including `synctest` and `mockgen`), with deeper guidance in the skill's `references/` files for architecture, database access, testing, timestamps, and documentation style (tone and structure for doc comments, READMEs, and guides).
 
 ### pr
 
