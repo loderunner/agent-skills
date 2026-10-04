@@ -65,12 +65,16 @@ Close with a chapter on what was deliberately left out and where it would attach
 
 ## What to leave behind
 
-Later chapters get written in fresh sessions with none of this context, so the output has to stand alone. Save, durably — a project doc, a repo file, whatever persists in this environment:
+Later chapters get written in fresh sessions with none of this context, so the output has to stand alone. Save, durably, in **one place that can take more files later** — a `course/` directory in the repo, a project folder, whatever persists in this environment. Delivering sessions add a summary per finished chapter to that same place, and they find the set by looking where the TOC is, so a scattered plan costs every later session a search.
 
 1. **The table of contents.** Numbered chapters and sections, each with its one-line summary, plus a short note on how the course is meant to be delivered and what the reference implementation is.
 2. **A reference source digest.** Every source file of the build, inline, in one readable document. A future session needs to read the answer key without unpacking an archive.
 
-Say where you put them. If a downloadable copy of the project would help, offer it rather than assuming.
+Say where you put them — precisely, as a path. That location is the course's home for the rest of its life.
+
+One thing to be explicit about in the digest itself: it is the **finished** app, not the state of anyone's project part-way through. A delivering session that mistakes it for a shared starting point will teach chapter 3 in terms of code the learner won't write until chapter 5. A line at the top saying so is cheap insurance.
+
+If a downloadable copy of the project would help, offer it rather than assuming.
 
 ## What makes a bad TOC
 
