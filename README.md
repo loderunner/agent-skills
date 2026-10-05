@@ -11,6 +11,7 @@ Skills are packaged instructions that extend coding agents with domain-specific 
 - [Usage](#usage)
   - [go-conventions](#go-conventions)
   - [pr](#pr)
+  - [technical-writing](#technical-writing)
   - [tutorial](#tutorial)
 
 ## Skills
@@ -19,6 +20,7 @@ Skills are packaged instructions that extend coding agents with domain-specific 
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [go-conventions](skills/go-conventions) | Opinionated conventions for writing idiomatic, consistent Go code — package architecture, error handling, formatting, and testing (including synctest and mockgen). |
 | [pr](skills/pr)                         | Manages GitHub PRs for the current branch: create, and update.                                                                                                      |
+| [technical-writing](skills/technical-writing) | Writes and edits clear developer-facing text — READMEs, docs, code comments, error messages, and commit messages — using principles from Google's technical writing courses and style guide. |
 | [tutorial](skills/tutorial)             | Teaches a technology or codebase as a hands-on course: prepares a verified reference build and chapter TOC, then delivers it one small increment at a time.         |
 
 ## Installation
@@ -74,6 +76,10 @@ Commits any uncommitted changes, creates and pushes a branch if you're still on 
 ```
 
 Commits any uncommitted changes, rebases onto the base branch if it's moved (falling back to a merge, or stopping to ask if there's a real conflict), pushes, then refreshes the PR's title and description.
+
+### technical-writing
+
+Applies automatically whenever you write, rewrite, or review developer-facing text: READMEs, docs pages, tutorials, design docs, API reference, code comments, error messages, CLI help, release notes, commit messages, and PR descriptions. It also applies when you ask for clearer, shorter, or more consistent technical text. It distills Google's technical writing courses and developer documentation style guide into core rules, with deeper guidance in the skill's `references/` files for documents, code comments and API docs, error messages, formatting and mechanics, and a word list.
 
 ### tutorial
 
