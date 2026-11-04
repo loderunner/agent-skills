@@ -51,16 +51,15 @@ Two or three sentences on what the PR changes and why, in behavior terms, not fi
 
 ## 3. The loop: one stop per response
 
-Five beats:
+Four beats, in prose:
 
-1. **Where.** A location for every hunk at the stop. In VS Code, use a workspace-relative markdown link, such as `[store.go:40-72](internal/store.go#L40-L72)`. In a terminal, use plain `internal/store.go:40-72`. The links must match the checked-out code, so re-read a file before linking if you have edited it.
-2. **The diff.** Show it inline as a `diff` block.
-   - **Short hunk** (about 20 changed lines or fewer): show it whole.
-   - **Longer hunk:** trim to the lines the point hinges on, mark each cut with `…`, and let the location reference cover the rest. If trimming would hide the point, split the stop, because the hunk is probably two ideas.
-   - **Several hunks at one stop:** one block is fine, with `…` between them, and one link per hunk in the location line.
-3. **What changed.** One or two sentences on behavior. The reviewer can read the code; what they can't read is what it does differently now.
-4. **What to look at.** The one or two things that deserve their attention: what isn't obvious, what's risky, the plausible-looking alternative and why it wasn't taken, and any bug you suspect, with your confidence. If nothing deserves attention, say the stop is routine and move on. Manufactured concern is worse than none.
-5. **Stop.** Give the progress ("stop 3/7") and one line naming what's next. Then actually stop and wait.
+1. **Explain what changed, and why it has that shape.** Open with the idea at this stop in behavior terms, then walk the code in the order the idea needs it, not the order the lines appear in the file. Weave the file references into the sentences where the reviewer should look, so they open the code at the moment the explanation points at it: "`Save` now retries in a loop ([store.go:40-58](internal/store/store.go#L40-L58)), and what counts as transient is decided by `isTransient` ([errors.go:12-30](internal/store/errors.go#L12-L30))." Cover every hunk at the stop, but don't recite lines the reviewer can read. Say what the old code did where that explains the new code.
+2. **What to look at.** The one or two things that deserve their attention: what isn't obvious, what's risky, the plausible-looking alternative and why it wasn't taken, and any bug you suspect, with your confidence and a link to the line. If nothing deserves attention, say the stop is routine and move on. Manufactured concern is worse than none.
+3. **Stop.** Give the progress ("stop 3/7") and one line naming what's next. Then actually stop and wait.
+
+**No code blocks.** Not a `diff`, not a language-tagged excerpt. Code is in the reviewer's editor one click away, highlighted and in context, and a pasted copy goes stale as soon as you edit. Short identifiers and expressions in backticks inside a sentence are fine. A link to a range is the way to point at several lines.
+
+**Link format.** In VS Code, use a workspace-relative markdown link, such as `[store.go:40-72](internal/store.go#L40-L72)`. In a terminal, use plain `internal/store.go:40-72`. Links must match the checked-out code, so re-read a file before linking if you have edited it.
 
 **Sizing.** A stop is one coherent concern, usually 30 to 120 changed lines. The budget decides granularity. If the session runs long, merge stops instead of rushing the explanations.
 
@@ -75,7 +74,7 @@ Five beats:
 
 Nothing changes until the reviewer asks. What happens then depends on whose code it is.
 
-- **Someone else's code:** draft a comment addressed to the author. Make it specific, and use a GitHub `suggestion` block when the fix is concrete. Confirm it in one line ("Queued for `store.go:58`: …"), keep the queue in the conversation, and move on.
+- **Someone else's code:** draft a comment addressed to the author. Make it specific, and use a GitHub `suggestion` block in the comment text when the fix is concrete (that is the posted comment, not a stop). Confirm it in one line ("Queued for `store.go:58`: …"), keep the queue in the conversation, and move on.
 - **The user's own code:** edit directly. VS Code shows the native diff with per-change accept and reject. Don't commit until asked.
 - **Overrides:** "just fix it" on someone else's PR means edit locally and ask before pushing to the author's branch. "Note it for later" on the user's own PR means queue it.
 - Edits shift line numbers. Re-read before linking again.
@@ -103,7 +102,8 @@ The reviewer steers; believe them.
 - Walking files in diff order, or commits in order, when the change only makes sense from its core idea outwards.
 - Leaning on something a later stop introduces without saying so.
 - Dumping every finding in one response. That is `/code-review`.
-- Pasting a 100-line hunk whole when ten of its lines carry the point.
+- Code blocks of any kind in a stop: pasted diffs, excerpts, "before" and "after". Link to the lines instead.
+- Reciting the code line by line. The reviewer can read it; explain what it does and why.
 - Trying to open diffs in VS Code with `vscode://` links, deeplinks, or the PR extension's URL.
 - Fifteen nits at one stop. Pick what matters; mention that more exist only if the reviewer wants them.
 - Posting a review or pushing a branch without confirmation.
@@ -114,26 +114,10 @@ The reviewer steers; believe them.
 
 > **The PR adds a retry loop around `Store.Save`, so a transient database error no longer fails the request.** Budget is 4 stops; this is the core one.
 >
-> [internal/store/store.go:40-58](internal/store/store.go#L40-L58)
+> Before, `Save` returned the result of `s.db.Insert` directly. Now it calls `Insert` in a loop of up to `maxAttempts` tries ([store.go:40-58](internal/store/store.go#L40-L58)), sleeping a backoff between tries, and gives up at once for any error that `isTransient` doesn't accept. So a dropped connection is retried and a unique-key violation is not.
 >
-> ```diff
->  func (s *Store) Save(ctx context.Context, item Item) error {
-> -	return s.db.Insert(ctx, item)
-> +	var err error
-> +	for attempt := 0; attempt < maxAttempts; attempt++ {
-> +		if err = s.db.Insert(ctx, item); err == nil || !isTransient(err) {
-> +			return err
-> +		}
-> +		time.Sleep(backoff(attempt))
-> +	}
-> +	return err
->  }
-> ```
->
-> `Save` now retries up to `maxAttempts` times on errors that `isTransient` accepts, sleeping between tries.
->
-> Two things to look at. First, `time.Sleep` ignores `ctx`, so a cancelled request still waits out the backoff; a `select` on `ctx.Done()` would avoid that, and I'm fairly sure it's a real bug. Second, `Insert` is retried as if it were idempotent. If `item.ID` is generated before the call, a retry after a timeout that actually committed fails on the unique key instead of double-writing, which is safe. If the database generates it, you get a duplicate row. I haven't checked which; that's the next thing I'd read.
+> Two things to look at. First, the sleep at [store.go:52](internal/store/store.go#L52) is a plain `time.Sleep` that ignores `ctx`, so a cancelled request still waits out the backoff; selecting on `ctx.Done()` would avoid that, and I'm fairly sure it's a real bug. Second, `Insert` is retried as if it were idempotent. If `item.ID` is generated before the call, a retry after a timeout that actually committed fails on the unique key instead of double-writing, which is safe. If the database generates it, you get a duplicate row. I haven't checked which; that's the next thing I'd read.
 >
 > Stop 1/4. Next: `isTransient`, which decides what gets retried.
 
-Note what that response does _not_ do: it doesn't show `isTransient`, the tests, or the config change. Each is its own stop.
+Note what that response does _not_ do: it has no code block, and it doesn't cover `isTransient`, the tests, or the config change. Each is its own stop.
