@@ -10,6 +10,7 @@ Skills are packaged instructions that extend coding agents with domain-specific 
 - [Installation](#installation)
 - [Usage](#usage)
   - [go-conventions](#go-conventions)
+  - [pair-review](#pair-review)
   - [pr](#pr)
   - [technical-writing](#technical-writing)
   - [tutorial](#tutorial)
@@ -19,6 +20,7 @@ Skills are packaged instructions that extend coding agents with domain-specific 
 | Skill                                   | Description                                                                                                                                                         |
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [go-conventions](skills/go-conventions) | Opinionated conventions for writing idiomatic, consistent Go code — package architecture, error handling, formatting, and testing (including synctest and mockgen). |
+| [pair-review](skills/pair-review)       | Walks you through a pull request one stop at a time, in the order it is best understood, so you review at your own pace; queues comments or makes edits only on request. |
 | [pr](skills/pr)                         | Manages GitHub PRs for the current branch: create, and update.                                                                                                      |
 | [technical-writing](skills/technical-writing) | Writes and edits clear developer-facing text — READMEs, docs, code comments, error messages, and commit messages — using principles from Google's technical writing courses and style guide. |
 | [tutorial](skills/tutorial)             | Teaches a technology or codebase as a hands-on course: prepares a verified reference build and chapter TOC, then delivers it one small increment at a time.         |
@@ -60,6 +62,16 @@ The coding agent will automatically load skills when it detects a relevant task.
 ### go-conventions
 
 Applies automatically whenever you write, review, or refactor Go code — no invocation needed. It covers formatting, error handling, package architecture, and testing conventions (including `synctest` and `mockgen`), with deeper guidance in the skill's `references/` files for architecture, database access, testing, timestamps, and documentation style (tone and structure for doc comments, READMEs, and guides).
+
+### pair-review
+
+Walks you through a GitHub PR as a conversation instead of a findings list. Each response covers one small piece of the diff, in the order it is best understood rather than file order: the diff, what changed, what deserves your attention. Then it stops so your questions can come up. Time-boxed to about 15 minutes per 500 changed lines.
+
+```
+❯ /pair-review 123
+```
+
+It first asks whether the PR is your code or someone else's, then checks the PR out (it stops if your working tree is dirty and offers to stash, use a worktree, or commit). Nothing changes until you ask. On your own code it edits directly; on someone else's it queues review comments and, at the end, posts them as one GitHub review after you confirm. In VS Code it links every hunk to its lines, and highlighting lines in the editor tells it what a vague question is about. For a one-shot list of findings, use `/code-review` instead.
 
 ### pr
 

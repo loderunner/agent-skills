@@ -8,7 +8,7 @@
     {
       "name": "agent-skills",
       "source": "./",
-      "description": "Personal agent skills for coding agents: Go conventions, PR management, and tutorial generation."
+      "description": "Personal agent skills for coding agents: Go conventions, PR management, code review, and tutorial generation."
     }
   ]
 }
