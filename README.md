@@ -87,7 +87,7 @@ Commits any uncommitted changes, creates and pushes a branch if you're still on 
 ❯ /pr update
 ```
 
-Commits any uncommitted changes, rebases onto the base branch if it's moved (falling back to a merge, or stopping to ask if there's a real conflict), pushes, then refreshes the PR's title and description.
+Commits any uncommitted changes, rebases onto the base branch if it's moved (falling back to a merge, or stopping to ask if there's a real conflict), pushes, then refreshes the PR's title and description. If the PR was stacked on another branch that has since been squash-merged (and the PR retargeted), it finds where your branch forked from the old base, using GitHub's PR history, and replays only your commits. Conflicts with what the old base changed afterwards are resolved from that history when its intent is clear.
 
 ```
 ❯ /pr babysit
