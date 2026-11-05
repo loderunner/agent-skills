@@ -21,7 +21,7 @@ Skills are packaged instructions that extend coding agents with domain-specific 
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [go-conventions](skills/go-conventions) | Opinionated conventions for writing idiomatic, consistent Go code — package architecture, error handling, formatting, and testing (including synctest and mockgen). |
 | [pair-review](skills/pair-review)       | Walks you through a pull request one stop at a time, in the order it is best understood, so you review at your own pace; queues comments or makes edits only on request. |
-| [pr](skills/pr)                         | Manages GitHub PRs for the current branch: create, and update.                                                                                                      |
+| [pr](skills/pr)                         | Manages GitHub PRs for the current branch: create, update, and babysit.                                                                                             |
 | [technical-writing](skills/technical-writing) | Writes and edits clear developer-facing text — READMEs, docs, code comments, error messages, and commit messages — using principles from Google's technical writing courses and style guide. |
 | [tutorial](skills/tutorial)             | Teaches a technology or codebase as a hands-on course: prepares a verified reference build and chapter TOC, then delivers it one small increment at a time.         |
 
@@ -75,7 +75,7 @@ It first asks whether the PR is your code or someone else's, then checks the PR 
 
 ### pr
 
-Manages GitHub PRs for the current branch, with two sub-commands:
+Manages GitHub PRs for the current branch, with three sub-commands:
 
 ```
 ❯ /pr create
@@ -88,6 +88,12 @@ Commits any uncommitted changes, creates and pushes a branch if you're still on 
 ```
 
 Commits any uncommitted changes, rebases onto the base branch if it's moved (falling back to a merge, or stopping to ask if there's a real conflict), pushes, then refreshes the PR's title and description.
+
+```
+❯ /pr babysit
+```
+
+Watches the PR's CI runs and review comments until it can merge. It fixes failing checks (rerunning a flaky job once), fixes clear review comments, and replies in the thread to ones that don't apply. It asks you before acting on anything bigger, such as a design change or a repeated failure. It merges only when all checks pass, no threads are open, and branch protection is satisfied, using the merge method your `CLAUDE.md` or the repo calls for (it asks if none is stated). It never bypasses branch protection, and it keeps waiting if a required approval is missing.
 
 ### technical-writing
 

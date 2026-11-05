@@ -1,12 +1,16 @@
 ---
 name: pr
 description: Manages GitHub PRs for the current branch. Use for creating new PRs
-  (/pr create) or updating existing PRs after new commits (/pr update).
+  (/pr create), updating existing PRs after new commits (/pr update), or
+  babysitting a PR (/pr babysit) — watching its CI runs and review comments,
+  fixing issues as they appear, and merging when everything is green. Trigger on
+  "babysit the PR", "watch the PR", "monitor CI", "address review comments", or
+  "merge when green".
 ---
 
 # PR Skill
 
-Two sub-commands: `create`, `update`. Identify which the user wants from their message.
+Three sub-commands: `create`, `update`, `babysit`. Identify which the user wants from their message.
 
 ---
 
@@ -91,6 +95,68 @@ When a rebase or merge produces conflicts:
    - What the PR branch changed in that area
    - What the ambiguity is
    - Ask the user to either explain how to resolve or resolve manually, then re-run `/pr update` — use a built-in question tool, such as the `AskUserQuestion` tool, if available
+
+---
+
+## `/pr babysit`
+
+Watch the open PR on the current branch: monitor CI and review comments, fix issues as they appear, and merge once everything is green.
+
+### Setup
+
+1. Verify an open PR exists: `gh pr view --json number,state,isDraft,baseRefName,headRefName`
+   - Stop with a clear message if there is none or it is already merged or closed
+   - If it is a draft, stop and ask the user — merging requires marking it ready
+2. If there are uncommitted changes or unpushed commits, run the `/pr update` steps first so CI sees the real branch state
+
+### Each cycle: read state, then act
+
+Read the state with:
+- `gh pr checks`
+- `gh pr view --json mergeable,mergeStateStatus,reviewDecision,statusCheckRollup`
+- Unresolved review threads: `gh api graphql` on `reviewThreads`, selecting `isResolved` and `isOutdated`
+- New PR-level comments and reviews since the last cycle — bots often post as plain comments, not threads
+
+Handle what you find in this order:
+
+- **Failing check:** read the failed logs (`gh run view <id> --log-failed`) and diagnose.
+  - If the branch caused it, fix it.
+  - If it looks flaky or like infrastructure, rerun the failed jobs once: `gh run rerun <id> --failed`.
+  - If the same check fails again after a fix or a rerun, or the cause is unclear, stop and ask. Looping on a red check burns time and hides the real problem.
+- **Out of date or conflicting with the base:** sync with the `/pr update` steps and **Conflict handling**. Non-trivial conflicts stop the babysit.
+- **Review comment:** classify each one.
+  - *Clear and actionable:* make the fix.
+  - *Irrelevant, doesn't apply, already handled, or an accepted trade-off:* reply in the thread saying why. Make no code change.
+  - *Bigger* (a design change, a scope question, an ambiguous request, or disagreement with a human reviewer): pause and ask the user, with the comment, your reading of it, and what you would propose.
+
+Batch the fixes from one cycle into one commit and one push, so CI runs once. After pushing, reply on each fixed thread (naming the commit) and resolve it. Resolve a thread you answered without a code change only when the reviewer was a bot or accepted your reply. A human's open disagreement is the "ask" case.
+
+### Waiting
+
+- While checks are running, block with `gh pr checks --watch` (or the runtime's wait or monitor primitive) instead of busy-looping.
+- When checks are green but reviews are pending, poll every few minutes with whatever scheduling or wait mechanism the runtime offers (a loop, schedule or monitor tool if available, otherwise `sleep`).
+- Don't merge the moment checks turn green. Review bots usually comment after CI finishes, so require a settle period (no new comments or threads for about two polls) before treating the PR as done.
+
+### Merge gate
+
+Merge only when all of these hold:
+
+- Every check has passed (skipped is fine; none pending or failing)
+- Zero unresolved review threads
+- `mergeStateStatus` is `CLEAN`, and `reviewDecision` is neither `CHANGES_REQUESTED` nor `REVIEW_REQUIRED`
+- The settle period has elapsed with nothing new
+
+Then run `gh pr merge` with the merge method flag (`--squash`, `--merge` or `--rebase`) that the user's or repo's instructions call for (`CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING`, repo settings). If none is stated, ask once rather than guessing — non-interactive `gh pr merge` requires a method flag.
+
+Never use `--admin` or otherwise bypass branch protection. If a required approval is missing, report who or what the PR is waiting on and keep waiting. Don't delete the branch or switch branches afterwards unless asked.
+
+### Stop and report instead of continuing
+
+- A bigger comment, a repeated or unclear failure, or a non-trivial conflict (ask the user)
+- The PR was closed or merged by someone else
+- No progress for a long stretch (about 2 hours): report the current state and what it is waiting on
+
+When the babysit ends, whether merged or paused, give a short summary: what failed and how it was fixed, which comments were fixed or answered, what is still open, and the merge commit if merged.
 
 ---
 
