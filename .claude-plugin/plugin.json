@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
-  "name": "agent-skills",
+  "name": "loderunner",
   "description": "Personal agent skills for coding agents: Go conventions, PR management, code review, and tutorial generation.",
   "author": {
     "name": "loderunner",

@@ -19,7 +19,7 @@ Skills are packaged instructions that extend coding agents with domain-specific 
 
 | Skill                                   | Description                                                                                                                                                         |
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [go-conventions](skills/go-conventions) | Opinionated conventions for writing idiomatic, consistent Go code — package architecture, error handling, formatting, and testing (including synctest and mockgen). |
+| [go-conventions](skills/go-conventions) | Applies opinionated conventions for idiomatic, consistent Go: package architecture, error handling, formatting, and testing (including synctest and mockgen). |
 | [pair-review](skills/pair-review)       | Walks you through a pull request one stop at a time, in the order it is best understood, so you review at your own pace; queues comments or makes edits only on request. |
 | [pr](skills/pr)                         | Manages GitHub PRs for the current branch: create, update, and babysit.                                                                                             |
 | [technical-writing](skills/technical-writing) | Writes and edits clear developer-facing text — READMEs, docs, code comments, error messages, and commit messages — using principles from Google's technical writing courses and style guide. |
@@ -45,23 +45,25 @@ This repo is also a [Claude Code plugin marketplace](https://docs.claude.com/en/
 
 ```
 /plugin marketplace add loderunner/agent-skills
-/plugin install agent-skills@agent-skills
+/plugin install loderunner@loderunner
 ```
 
 or from the command line:
 
 ```shell
 claude plugin marketplace add loderunner/agent-skills
-claude plugin install agent-skills@agent-skills
+claude plugin install loderunner@loderunner
 ```
 
 ## Usage
 
-The coding agent will automatically load skills when it detects a relevant task. In some agents, you can also force a skill to load by mentioning it with a `/`.
+The coding agent loads skills automatically when it detects a relevant task. In some agents, you can also load a skill by typing its name after a `/`.
+
+In Claude Code, the plugin namespaces each skill with the plugin name: for example, `/loderunner:pr`. The examples in this section use the short names.
 
 ### go-conventions
 
-Applies automatically whenever you write, review, or refactor Go code — no invocation needed. It covers formatting, error handling, package architecture, and testing conventions (including `synctest` and `mockgen`), with deeper guidance in the skill's `references/` files for architecture, database access, testing, timestamps, and documentation style (tone and structure for doc comments, READMEs, and guides).
+Applies automatically whenever you write, review, or refactor Go code. You don't need to invoke it. It covers formatting, error handling, package architecture, and testing conventions (including `synctest` and `mockgen`). The skill's `references/` files go deeper on architecture, database access, testing, timestamps, and documentation style (tone and structure for doc comments, READMEs, and guides).
 
 ### pair-review
 
@@ -71,7 +73,11 @@ Walks you through a GitHub PR as a conversation instead of a findings list. Each
 ❯ /pair-review 123
 ```
 
-It first asks whether the PR is your code or someone else's, then checks the PR out (it stops if your working tree is dirty and offers to stash, use a worktree, or commit). Nothing changes until you ask. On your own code it edits directly; on someone else's it queues review comments and, at the end, posts them as one GitHub review after you confirm. In VS Code it links every hunk to its lines, and highlighting lines in the editor tells it what a vague question is about. For a one-shot list of findings, use `/code-review` instead.
+The skill first asks whether the PR is your code or someone else's, then checks out the PR. If your working tree is dirty, it stops and offers to stash, use a worktree, or commit.
+
+Nothing changes until you ask. On your own code, the skill edits directly. On someone else's code, it queues review comments and, after you confirm, posts them as one GitHub review. In VS Code, it links every hunk to its lines, and the lines you highlight in the editor tell it what a vague question is about.
+
+For a one-shot list of findings, use `/code-review` instead.
 
 ### pr
 
@@ -93,11 +99,20 @@ Commits any uncommitted changes, rebases onto the base branch if it's moved (fal
 ❯ /pr babysit
 ```
 
-Watches the PR's CI runs and review comments until it can merge. It fixes failing checks (rerunning a flaky job once), fixes clear review comments, and replies in the thread to ones that don't apply. It asks you before acting on anything bigger, such as a design change or a repeated failure. It merges only when all checks pass, no threads are open, and branch protection is satisfied, using the merge method your `CLAUDE.md` or the repo calls for (it asks if none is stated). It never bypasses branch protection, and it keeps waiting if a required approval is missing.
+Watches the PR's CI runs and review comments until the PR can merge:
+
+- Fixes failing checks, and reruns a flaky job once.
+- Fixes clear review comments, and replies in the thread to comments that don't apply.
+- Asks you before acting on anything bigger, such as a design change or a repeated failure.
+- Merges when all checks pass, no threads are open, and branch protection is satisfied. The merge method comes from your `CLAUDE.md` or the repo, and the skill asks if neither states one.
+
+The skill doesn't bypass branch protection. If a required approval is missing, it keeps waiting.
 
 ### technical-writing
 
-Applies automatically whenever you write, rewrite, or review developer-facing text: READMEs, docs pages, tutorials, design docs, API reference, code comments, error messages, CLI help, release notes, commit messages, and PR descriptions. It also applies when you ask for clearer, shorter, or more consistent technical text. It distills Google's technical writing courses and developer documentation style guide into core rules, with deeper guidance in the skill's `references/` files for documents, code comments and API docs, error messages, formatting and mechanics, and a word list.
+Applies automatically whenever you write, rewrite, or review developer-facing text: READMEs, docs pages, tutorials, design docs, API reference, code comments, error messages, CLI help, release notes, commit messages, and PR descriptions. It also applies when you ask for clearer, shorter, or more consistent technical text.
+
+The skill distills Google's technical writing courses and developer documentation style guide into core rules. Its `references/` files go deeper on documents, code comments and API docs, error messages, formatting and mechanics, and a word list.
 
 ### tutorial
 
