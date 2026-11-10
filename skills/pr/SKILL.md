@@ -185,12 +185,14 @@ Merge only when all of these hold:
 
 - Every check has passed (skipped is fine; none pending or failing)
 - Zero unresolved review threads
-- `mergeStateStatus` is `CLEAN`, and `reviewDecision` is neither `CHANGES_REQUESTED` nor `REVIEW_REQUIRED`
+- `mergeStateStatus` is `CLEAN`, or `BLOCKED` only because `reviewDecision` is `REVIEW_REQUIRED` (see below), and `reviewDecision` is not `CHANGES_REQUESTED`
 - The settle period has elapsed with nothing new
 
 Then run `gh pr merge` with the merge method flag (`--squash`, `--merge` or `--rebase`) that the user's or repo's instructions call for (`CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING`, repo settings). If none is stated, ask once rather than guessing — non-interactive `gh pr merge` requires a method flag.
 
-Never use `--admin` or otherwise bypass branch protection. If a required approval is missing, report who or what the PR is waiting on and keep waiting. Don't delete the branch or switch branches afterwards unless asked.
+`REVIEW_REQUIRED` does not hold the merge back. Attempt the merge anyway: the user may be allowed to merge without an approval (a bypass actor, or a ruleset that doesn't require one), and GitHub is the one that knows. Treating it as a blocker would stop the babysit for a PR that could have been merged. Only a `CHANGES_REQUESTED` review decision, which is an explicit objection, stops the attempt.
+
+Never use `--admin` or otherwise bypass branch protection yourself. If GitHub rejects the merge for a missing approval, report who or what the PR is waiting on and keep waiting, retrying the merge on later polls. Don't delete the branch or switch branches afterwards unless asked.
 
 ### Stop and report instead of continuing
 
