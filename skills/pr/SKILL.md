@@ -177,7 +177,20 @@ Batch the fixes from one cycle into one commit and one push, so CI runs once. Af
 
 - While checks are running, block with `gh pr checks --watch` (or the runtime's wait or monitor primitive) instead of busy-looping.
 - When checks are green but reviews are pending, poll every few minutes with whatever scheduling or wait mechanism the runtime offers (a loop, schedule or monitor tool if available, otherwise `sleep`).
-- Don't merge the moment checks turn green. Review bots usually comment after CI finishes, so require a settle period (no new comments or threads for about two polls) before treating the PR as done.
+- Don't merge the moment checks turn green if something can still show up. Review bots and reviewers often react to a push or to CI finishing, so allow a settle period of two poll intervals after the last such trigger. Waiting is a cost, so wait only for the part of the settle period that is still owed (see below).
+
+#### How much settle time is owed
+
+The settle period exists to catch activity triggered by an event. It is not a flat delay added to every cycle. Work out what is still owed from the facts instead of waiting two polls by default:
+
+1. **Anchor on the latest trigger.** That is the later of (a) the last push to the branch, whoever made it, and (b) the moment the last check finished (`completedAt` in `statusCheckRollup`). Take the push time from your own `git push` if you made it this session. Otherwise use when the checks for the head commit started (`gh pr checks --json name,startedAt`), which is close enough. Bots are slow after a push, but they don't wait for CI, so the push anchors the wait as much as CI does.
+2. **Owe only the remainder.** `owed = max(0, anchor + 2 × poll interval − now)`. If the last push was a long time ago and CI finished more than two intervals ago, owe nothing: any bot that was going to comment already had its chance.
+3. **Owe nothing if nobody can still respond.** Look at who has engaged with this PR: reviewers and bots in `reviews`, review threads and PR comments, plus pending `reviewRequests`. If each of them has already reviewed the current head commit (compare each review's `commit.oid` with `headRefOid`) and no review request is pending, there is nobody left to wait for. Review bots that run as CI checks are already covered, because their check finishing is the trigger from step 1.
+4. **Push resets the clock.** After one of your own pushes (a fix, a sync with the base), the anchor is that push, so the full two intervals apply again once the new CI run finishes. This is the case the settle period is for.
+
+When some time is owed, wait for exactly that remainder, not a full poll, and check the state once when it is over. When nothing is owed, go straight to the merge gate. A cycle that finds nothing new and owes nothing should merge, not sleep.
+
+Pending reviews are different from the settle period: if a reviewer you are waiting on hasn't looked at the head commit yet, keep polling at the normal interval until they do or the no-progress limit below is reached.
 
 ### Merge gate
 
@@ -186,7 +199,7 @@ Merge only when all of these hold:
 - Every check has passed (skipped is fine; none pending or failing)
 - Zero unresolved review threads
 - `mergeStateStatus` is `CLEAN`, or `BLOCKED` only because `reviewDecision` is `REVIEW_REQUIRED` (see below), and `reviewDecision` is not `CHANGES_REQUESTED`
-- The settle period has elapsed with nothing new
+- No settle time is still owed (see **How much settle time is owed**) and nothing new has appeared
 
 Then run `gh pr merge` with the merge method flag (`--squash`, `--merge` or `--rebase`) that the user's or repo's instructions call for (`CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING`, repo settings). If none is stated, ask once rather than guessing — non-interactive `gh pr merge` requires a method flag.
 
