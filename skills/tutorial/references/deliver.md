@@ -56,9 +56,9 @@ Chapters are usually taught in separate sessions, so you arrive with no memory o
 
 So before the first increment, go and find the second one:
 
-1. **Read the learner's project, if this session can see it.** Files on disk are ground truth and beat every other source. What is actually in `store.py` right now is what they will be editing, and reading it takes seconds.
+1. **Read the learner's project, if this session can see it.** Files on disk are ground truth and beat every other source. What is actually in `store.py` right now is what they will be editing, and reading it takes seconds. If you find code that neither the summaries nor the plan account for, it may be bonus work from a follow-up question, which summaries deliberately leave out — ask about it in a line rather than removing it or building on it.
 2. **Read the previous chapter summaries, in order.** They live wherever the course plan lives — see "Closing a chapter" below. They are the record of what was taught, and just as importantly they are **the vocabulary you are allowed to assume.** Someone who has been through chapters 1 and 2 knows what those two summaries say they know, plus whatever you introduce today. Nothing else about this project.
-3. **Read the plan** — the table of contents, the chapter outline, the reference digest. Follow its numbering and scope: if the outline says 4.3 covers enums, cover enums and don't drift into 4.4.
+3. **Read the plan** — the table of contents, the chapter outline, the reference digest. Follow its numbering and scope: if the outline says 4.3 covers enums, cover enums and don't drift into 4.4. Its delivery note also says whether the learner wants follow-up questions when a chapter closes.
 4. **If none of that exists**, ask rather than assume. "Where's the code, and how far did you get?" costs one turn and saves a chapter taught to the wrong person.
 
 Then open with two or three sentences of orientation — where we are, in terms of what they actually built last time, and what will exist by the end of today — and go straight into the first increment. Not a summary of everything to come.
@@ -130,7 +130,7 @@ Write it as a record of what _this learner_ actually did, not what the chapter w
 
 The moment is the learner telling you the last increment works — not the moment you hand that increment over. Until they have run it you do not know what to record.
 
-So that turn has a shape: acknowledge it works, write the file, say in a line or two what went into it, then offer the next chapter and stop. Writing the summary is what *makes* it the end of a chapter. "Chapter 4 is next, come back whenever" on its own reads like a clean ending and leaves the next session with nothing — that is the failure this whole artifact exists to prevent, and it is the easy one to walk into, because the conversation feels finished.
+So that turn has a shape: acknowledge it works, write the file, say in a line or two what went into it, add the follow-up questions if the learner wants them (see below), then offer the next chapter and stop. Writing the summary is what *makes* it the end of a chapter. "Chapter 4 is next, come back whenever" on its own reads like a clean ending and leaves the next session with nothing — that is the failure this whole artifact exists to prevent, and it is the easy one to walk into, because the conversation feels finished.
 
 Offer instead of writing in two cases:
 
@@ -139,13 +139,52 @@ Offer instead of writing in two cases:
 
 Don't ask permission when the chapter has plainly finished and you can write the file. The summary is part of finishing, the way a commit is part of finishing; asking turns a routine step into a decision the learner has no basis to make.
 
+### Follow-up questions
+
+Some learners want something to chew on before the next chapter. Whether this one does is recorded in the plan's delivery note, settled during prep. If the note says yes, put up to three follow-up questions after the line about the summary and before the offer of the next chapter. If it says no, leave them out — an unasked-for quiz turns a clean close into homework. If the plan doesn't say (an older course, or one that started without prep), ask once in a line at the first chapter close, and write the answer into the delivery note so no later session has to ask again. If the learner changes their mind later, update the note the same way.
+
+These questions are optional, so they only get answered if they're compelling. A dull one gets skipped, and it teaches the learner to skip the rest next time. Each one should be something they'd still be turning over on the walk home — a question that makes them see what they just built from an angle they hadn't considered.
+
+What makes that possible is specificity: **every question grows out of something this chapter introduced.** A question that could have been asked at the end of any chapter — or any course — is generic, and generic is what makes questions dull. It's also what makes chapter 4's questions echo chapter 3's, which a learner notices fast.
+
+1. **Reflection — dig under the why.** *"Why do you think…"* about something this chapter introduced, aimed one level below the explanation the chapter gave. Look for the place where the chapter's explanation stops and a deeper reason starts: the trade-off the tool's designers made, the problem the convention was invented to solve, the thing that would break if it worked the other way. A good one gives a small revelation — something the learner now uses every day turns out to be a choice somebody made, for reasons they can work out. If the answer is already in the chapter, or in the summary you just wrote, it's recall, not reflection.
+2. **Bonus work — something delightful to build.** A small thing, an hour or so, that they'd want to show someone. The chapter's new idea should be the engine of the fun: the bonus only exists because of what they learned today, and it bends that idea toward something the course would never ask for — a toy, a game, a prank, a piece of personality, a tool for their own life, the idea used somewhere it doesn't obviously belong. Chores don't count, however useful they are: an extra test, a refactor, error handling, input validation, a mirror image of a command they already wrote. Neither do gimmicks that fit any chapter equally well — picking something at random, a fancier printout, a dramatic voice on its own. Personality is welcome on top of today's idea, never in place of it. Leave the interesting choices to them, and keep it out of the next chapter's scope: a bonus that pre-empts chapter 4, or that edits code chapter 4 is going to change, costs the next session a detour.
+3. **Speculative — imagine something new.** *"What if…"* that takes something this chapter introduced and changes a basic assumption under it: who uses it, what it's made of, how time works for it, what it's for. It takes them past what the course will ever cover, into a design nobody has handed them. Wild is welcome, as long as the thread back to today's chapter is visible. It has no wrong answers: if checking a fact or running something would settle it, it's a quiz, not speculation.
+
+**The first idea is usually the one every tutorial would ask** — concurrency, scale, "add a test", "what if a million users". Sketch several candidates for each kind, then keep the one that would most surprise *this* learner, given what they built and what they said along the way. A remark they made mid-chapter ("that was spooky") is often the best seed there is.
+
+These show the range, from three unrelated courses. They're here to show how a question grows out of a chapter's idea — not as shapes to reuse:
+
+| Chapter | Reflection | Bonus | What if |
+|---|---|---|---|
+| React: state and re-rendering | React re-runs your whole component on every state change and throws most of the result away. Why do you think that turned out *simpler* than updating only what changed? | A text box with a ghost: as you type, a faded replay of every earlier state of the text drifts behind it. | What if state could fade — values that slowly forget themselves unless the user touches them? What would you build with that? |
+| Git: commits and branches | A branch is a tiny file holding one hash. Why do you think Git made branches that cheap, when older tools copied the whole tree? | A script that narrates your repo's history like a nature documentary, with extra drama wherever branches split and rejoin. | What if a branch could point at a commit that doesn't exist yet — a promise of future work? What would merging into it mean? |
+| CSS Grid | Grid lets you place items anywhere, but HTML order still decides what a screen reader says first. Why do you think CSS lets visual order and document order drift apart? | Lay out a 1920s newspaper front page — headlines spanning columns, an ad wedged into a corner — with nothing but grid areas. | What if layout responded to the reader instead of the screen — to how fast they scroll, or the time of day? |
+
+"Up to three" means one of each kind at most, and fewer when a kind has nothing good to ask about this chapter. A forced question is manufactured depth, and it's worse than none.
+
+Ground them in what this learner actually built — their code and their summary, not the answer key — and phrase them so they're answerable without knowing what later chapters cover.
+
+Before sending, read each one as the learner would:
+
+- **Could it have been asked at the end of a different chapter?** Then it isn't this chapter's question yet. Tie it to what today introduced.
+- **Could they answer the reflection by rereading the summary?** Then it's recall. Go one level deeper.
+- **Would they do the bonus because it's fun, or because it's good for them?** Only the first counts. Then name the thing from today's chapter the bonus can't work without — a statement, a flag, a behaviour they met for the first time today. If you can't name one, it's a gimmick: start again from that idea.
+- **Does the "what if" have one correct answer, or is it the first one anyone would think of?** Open it up, or find a stranger one.
+
+Mark them as optional in a single line, and mean it: skipping them costs nothing, and the next chapter must not depend on them. Then the offer of the next chapter, then stop.
+
+When the learner answers, treat it like a tangent. For a reflection or speculative answer, engage with their reasoning: say what holds up, add the piece that's missing, and don't grade it. Bonus work is their exercise: review the code they show you, give hints in increment-sized steps if they're stuck, and hand over a full solution only if they ask for one.
+
+**None of it goes in the summary** — not the questions, not the answers, not the bonus code, not even a mention, either when the summary is written or when it's kept current later. The summary is the record of the course and the vocabulary the next session is allowed to assume; an optional detour that slips into it becomes something chapter 4 takes for granted, and a learner who skipped the questions gets taught as though they hadn't.
+
 ### Keeping it current after the chapter closes
 
 Chapters rarely end cleanly. The learner comes back twenty minutes later with an error, asks the tangent they were saving up, renames something they didn't like the look of, or tries a variation to see what happens. All of that lands *after* `chapter-03.md` exists, and some of it makes the file wrong.
 
 So when something after the close changes what the next session would need to know — their code moved, a claim in the summary is now false, a divergence from the answer key appeared — edit the existing chapter file. Don't leave it stale, and don't save the correction up for the next chapter's summary, where nobody will look for it. Say you did it in half a sentence and carry on: it is a small edit to one or two sections, usually "Where the code stands" or "Judgement calls", not a rewrite.
 
-Two things do not go back into it. Work that belongs to the next chapter is the next chapter's — if they start chapter 4 early, that is chapter 4's summary, not an appendix to chapter 3. And a question you answered without anything changing is not a correction to the record; a tangent that left the code untouched changes nothing the next session needs.
+Three things do not go back into it. Work that belongs to the next chapter is the next chapter's — if they start chapter 4 early, that is chapter 4's summary, not an appendix to chapter 3. A question you answered without anything changing is not a correction to the record; a tangent that left the code untouched changes nothing the next session needs. And follow-up questions stay out entirely, along with their answers and any bonus code the learner writes for them, even though that code changes the project — see "Follow-up questions" above for why.
 
 The rule underneath all of it: the summary describes the project as of the last thing that happened, not the lesson as it was planned. Someone should be able to read it, open the learner's editor, and find the two agree.
 
@@ -169,7 +208,8 @@ For a short, informal ask that is obviously not a course — "just show me how r
 - **They say "keep going" or "faster".** Believe them — merge two or three increments into one response. Keep the beats; drop the pauses, not the explanations. If they say "just give me the whole chapter", do that.
 - **They say they already know this.** Skip it. Ask what they want instead of guessing.
 - **They go quiet on a hard part.** Offer a smaller step or a different angle, not the same explanation again.
-- **They carry on after a chapter closed.** Answer them as normal, and if their code or anything the summary claims has changed as a result, fold it into that chapter's file before moving on.
+- **They carry on after a chapter closed.** Answer them as normal, and if their code or anything the summary claims has changed as a result, fold it into that chapter's file before moving on — unless it's an answer to a follow-up question.
+- **They answer a follow-up question.** Discuss it as a tangent. For bonus work, review what they built and hint rather than solve, unless they ask for the solution. Leave the chapter summary alone.
 
 ## What ruins it
 
@@ -182,6 +222,8 @@ For a short, informal ask that is obviously not a course — "just show me how r
 - Finishing a chapter and not writing it down. The next session pays for it, and so does the learner.
 - Ending a chapter with nothing but an offer of the next one. It feels like a clean close and leaves no record behind.
 - A chapter summary that no longer matches the learner's code, because the session carried on after it was written.
+- Follow-up questions, or their answers, written into the chapter summary.
+- Follow-up questions for a learner who didn't ask for them.
 - Padding the explanation to look thorough. Three tight sentences that name a real trap beat two paragraphs restating the code.
 - Praise ("Great question!", "Nice work!") and filler. Assume competence; get to the point.
 

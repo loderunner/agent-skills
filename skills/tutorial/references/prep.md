@@ -27,7 +27,9 @@ If, after that read, one or more of the three is still genuinely unclear, ask be
 
 Reach for a structured question tool to do the asking, not a plain message. `AskUserQuestion` is the one to look for; if this environment doesn't expose it under that name, check the available tools for whatever else is built for putting a multiple-choice or short-answer question to the user — the same idea can show up under a different name depending on where this skill is running. Only when no such tool exists at all should the question go out as ordinary text in the conversation instead — that's the fallback, not the default.
 
-Once level, pace, and tone are settled, ask two to four more questions, and only the ones where guessing wrong means rebuilding. Good candidates: a fork in the architecture (sync or async, REST or gRPC), which hard case to feature, where a cross-cutting concern like testing lives. Bad candidates: anything you can decide yourself and mention later.
+Settle one more preference alongside those three: whether the learner wants **follow-up questions** at the end of each chapter — up to three optional prompts after the chapter summary: one that digs into a "why" the chapter didn't answer, one fun feature to build on their own, one open-ended "what if" that imagines something new. Some learners want something to chew on between sessions; others just want the next chapter. Infer it the same way — "quiz me", "give me exercises", or "keep it tight" all answer it — and when nothing does, ask it in the same question call as anything else still open, so it never costs an extra round. It's a yes or no, and it only changes how each chapter ends, so don't build a discussion around it.
+
+Once level, pace, tone, and follow-up questions are settled, ask two to four more questions, and only the ones where guessing wrong means rebuilding. Good candidates: a fork in the architecture (sync or async, REST or gRPC), which hard case to feature, where a cross-cutting concern like testing lives. Bad candidates: anything you can decide yourself and mention later.
 
 Settle what is deliberately **out** of scope, and say so. A course that also covers auth, logging, deployment and CI teaches none of them well. Cutting them is the decision that makes the rest teachable.
 
@@ -67,7 +69,7 @@ Close with a chapter on what was deliberately left out and where it would attach
 
 Later chapters get written in fresh sessions with none of this context, so the output has to stand alone. Save, durably, in **one place that can take more files later** — a `course/` directory in the repo, a project folder, whatever persists in this environment. Delivering sessions add a summary per finished chapter to that same place, and they find the set by looking where the TOC is, so a scattered plan costs every later session a search.
 
-1. **The table of contents.** Numbered chapters and sections, each with its one-line summary, plus a short note on how the course is meant to be delivered and what the reference implementation is.
+1. **The table of contents.** Numbered chapters and sections, each with its one-line summary, plus a short note on how the course is meant to be delivered and what the reference implementation is. That delivery note records level, pace, tone, and whether the learner wants follow-up questions after each chapter — a delivering session learns these only from the plan.
 2. **A reference source digest.** Every source file of the build, inline, in one readable document. A future session needs to read the answer key without unpacking an archive.
 
 Say where you put them — precisely, as a path. That location is the course's home for the rest of its life.

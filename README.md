@@ -120,7 +120,7 @@ Teaches a technology, stack, or unfamiliar codebase as a hands-on course, in two
 
 #### Prepare
 
-Takes a course request, plus your reader level, pace, and tone if not already implied by it:
+Takes a course request, plus your reader level, pace, tone, and whether you want follow-up questions after each chapter, if not already implied by it:
 
 ```
 ❯ /tutorial Design a crash course on FastAPI for someone who already knows Flask
@@ -136,4 +136,4 @@ Takes that TOC and reference implementation — from an earlier prepare, or alre
 ❯ /tutorial Teach me chapter 3
 ```
 
-Produces the chapter, one increment at a time, each requiring you to implement and try the code before it continues.
+Produces the chapter, one increment at a time, each requiring you to implement and try the code before it continues. Each chapter ends with a summary file saved beside the TOC and, if you opted in, up to three optional follow-up questions: a reflection question, a bonus feature to build, and a "what if".
