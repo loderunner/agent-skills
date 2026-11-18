@@ -9,6 +9,7 @@ Skills are packaged instructions that extend coding agents with domain-specific 
 - [Skills](#skills)
 - [Installation](#installation)
 - [Usage](#usage)
+  - [creative-partner](#creative-partner)
   - [go-conventions](#go-conventions)
   - [pair-review](#pair-review)
   - [pr](#pr)
@@ -19,6 +20,7 @@ Skills are packaged instructions that extend coding agents with domain-specific 
 
 | Skill                                   | Description                                                                                                                                                         |
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [creative-partner](skills/creative-partner) | Works as your creative partner, the way two strong collaborators work in a room: works from the side opposite yours (structure and economy, or images and feeling), trades short turns, and recaps what is settled, set aside, and open. |
 | [go-conventions](skills/go-conventions) | Applies opinionated conventions for idiomatic, consistent Go: package architecture, error handling, formatting, and testing (including synctest and mockgen). |
 | [pair-review](skills/pair-review)       | Walks you through a pull request one stop at a time, in the order it is best understood, so you review at your own pace; queues comments or makes edits only on request. |
 | [pr](skills/pr)                         | Manages GitHub PRs for the current branch: create, update, and babysit.                                                                                             |
@@ -60,6 +62,22 @@ claude plugin install loderunner@loderunner
 The coding agent loads skills automatically when it detects a relevant task. In some agents, you can also load a skill by typing its name after a `/`.
 
 In Claude Code, the plugin namespaces each skill with the plugin name: for example, `/loderunner:pr`. The examples in this section use the short names.
+
+### creative-partner
+
+Makes the agent your creative partner on a story, game, talk, song, exhibit, product experience, or any other thing you are making. It works the way two strong collaborators work in a room: short, concrete turns, one holding the structure while the other brings the felt moment, until something exists that neither would have made alone.
+
+```
+❯ /creative-partner I have thirty good moments for a concept album and no album. Be my Lucas.
+```
+
+The skill works from the side opposite yours. If you throw images, it helps organise, count, decide, and trim. If you bring structure, it brings the moments, the reversals, and what the audience will feel. You can ask for one side by name ("be my Lucas" for structure and economy, "be my Spielberg" for images and feeling); otherwise it reads which one your material is missing and switches when the exchange stalls. It never announces roles or explains its method: it just talks about your work.
+
+Over a session it frames the work, walks it end to end at low resolution, works the units in order, repairs the stuck ones by weighing three to five candidates and recommending one, and recaps what is settled, set aside, and still open. It offers to save the recap but doesn't create files unasked.
+
+The work stays yours. The agent pushes back once or twice with a reason, then builds on your decision. It writes beats, images, and moves, not the finished piece, unless you ask for a draft. The skill's `references/` files hold a catalogue of moves and example exchanges.
+
+This skill is for making things, not for judging finished work. For a critique, ask for one directly.
 
 ### go-conventions
 
