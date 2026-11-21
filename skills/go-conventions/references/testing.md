@@ -113,6 +113,8 @@ t.Fatal(...) }` deadlock guard — synctest replaces these entirely.
 
 - **Real network I/O** (`net.Listen`, `net.Dial`, TCP/Unix sockets) —
   network operations are not durably blocking; the bubble will deadlock.
+  For HTTP, use `httptest.NewTestServer` instead — see
+  [Testing HTTP code](#testing-http-code-in-a-bubble) below.
 - **Real OS processes** (`os/exec`, `io.Pipe()`) — file descriptor I/O is
   not durably blocking.
 - **Mutex contention stress tests** — tests that deliberately race
@@ -131,7 +133,8 @@ goroutines are "durably blocked". Know the difference:
 - `sync.Cond.Wait()`
 - `sync.WaitGroup.Wait()` (when `Add` was called inside the bubble)
 - `time.Sleep`, `time.After`, `time.NewTimer`, `time.NewTicker`
-- `synctest.Wait()`
+- `synctest.Wait()`, `synctest.Sleep()`
+- In-memory network I/O from `httptest.NewTestServer`
 
 **Not durably blocking (causes deadlocks if used as sync points):**
 
@@ -205,6 +208,53 @@ t.Run("retries on failure", func(t *testing.T) {
    `database/sql.connectionOpener` goroutine blocks on a bubble-aware
    channel and exits when `db.Close()` is called. Always `defer db.Close()`
    inside the bubble.
+7. **Prefer `synctest.Sleep(d)` to `time.Sleep(d)` followed by
+   `synctest.Wait()`.** It is exactly that pair. Use it when the test
+   advances the fake clock and then asserts on what the goroutines did.
+   Calling only `time.Sleep` leaves a race: if the test and the code under
+   test sleep for the same duration, it is unpredictable which goroutine
+   runs first. Use plain `time.Sleep` only when the test must not wait for
+   other goroutines to settle.
+
+   ```go
+   go svc.Start(ctx)        // retries every 5s
+   synctest.Sleep(5 * time.Second)
+   require.Equal(t, 1, mockDep.calls) // retry has run and settled
+   ```
+
+### Testing HTTP code in a bubble
+
+`httptest.NewServer` opens a real loopback socket, so it cannot be used
+inside a bubble. Use `httptest.NewTestServer(t, handler)` instead. It serves
+over an in-memory network that counts as durably blocking, so HTTP clients,
+retries, and timeouts run on the fake clock.
+
+```go
+synctest.Test(t, func(t *testing.T) {
+    server := httptest.NewTestServer(t, handler)
+    client := server.Client()
+
+    // The in-memory network ignores the host, so any URL reaches the server.
+    resp, err := client.Get(server.URL)
+    require.NoError(t, err)
+    // ...
+})
+```
+
+- **Create the server inside the bubble.** Its goroutines must belong to
+  the bubble.
+- **Do not call `Start` or `StartTLS`.** They switch the server to a real
+  loopback listener, which deadlocks the bubble. `server.URL` is
+  `example.com` in this mode.
+- **Use `server.Client()`, not `http.DefaultClient`.** Only the server's
+  client is wired to the in-memory network.
+- **Do not add `defer server.Close()`.** `NewTestServer` registers its own
+  cleanup, and it fails the test if the handler panics with anything other
+  than `http.ErrAbortHandler`.
+- **Pass a real handler.** A nil handler serves 500 for every request.
+
+Outside a bubble, or when the test needs a real socket (for example, a
+third-party client that dials by address), keep using `httptest.NewServer`.
 
 ## Mocking
 
