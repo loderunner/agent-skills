@@ -166,12 +166,43 @@ Handle what you find in this order:
   - If it looks flaky or like infrastructure, rerun the failed jobs once: `gh run rerun <id> --failed`.
   - If the same check fails again after a fix or a rerun, or the cause is unclear, stop and ask. Looping on a red check burns time and hides the real problem.
 - **Out of date or conflicting with the base:** sync with the `/pr update` steps and **Conflict handling**. Non-trivial conflicts stop the babysit.
-- **Review comment:** classify each one.
+- **Review comment:** classify each one. For a comment from a review bot, first read **Review bots: push back on needless complexity** below, because the "clear and actionable" bar is higher there.
   - *Clear and actionable:* make the fix.
   - *Irrelevant, doesn't apply, already handled, or an accepted trade-off:* reply in the thread saying why. Make no code change.
   - *Bigger* (a design change, a scope question, an ambiguous request, or disagreement with a human reviewer): pause and ask the user, with the comment, your reading of it, and what you would propose.
 
 Batch the fixes from one cycle into one commit and one push, so CI runs once. After pushing, reply on each fixed thread (naming the commit) and resolve it. Resolve a thread you answered without a code change only when the reviewer was a bot or accepted your reply. A human's open disagreement is the "ask" case.
+
+### Review bots: push back on needless complexity
+
+Agentic review bots (CodeRabbit, Copilot review, and similar; usually a login ending in `[bot]` or an author type of `Bot`) behave differently from human reviewers, and the difference matters for babysitting:
+
+- They post a lot of comments, most of them plausible taken alone. A comment being well-written and confident says little about whether it is right or worth the cost.
+- Each comment is written from a narrow view: one hunk, without the callers, the invariants the rest of the system enforces, the project's conventions, or the price of the extra code. A bot sees "this input could be null" and does not know that nothing can pass null here.
+- They have no sense of proportion. Every remedy looks free to them, so they ask for validation of impossible inputs, defensive branches, new abstractions, config knobs, extra tests for hypothetical cases, and rewrites toward a style they prefer. Each one adds code someone must read and maintain.
+- It compounds. Each push gives the bot new code to comment on, so a PR author who addresses everything gets more comments, more complexity, and a longer babysit, with no end in sight.
+
+You are the author's agent, not the bot's. Your job is to get the PR to a good state, which means fixing what is wrong and declining what only adds weight. A smaller diff that is correct beats a bigger one that satisfies every comment.
+
+**Defend the PR's choices when you know the reasons.** The bot sees a diff; you may have seen the decisions behind it: this session's conversation with the user, the PR description, commit messages, the linked ticket, code comments, or trade-offs the user already weighed and accepted. A bot that flags a deliberate choice (the simple approach over the general one, the missing handling for a case that was ruled out, a pattern that follows the codebase) is wrong about the goal, not just the code. Defend it in the thread by stating the reason and where it comes from ("kept this simple on purpose: X only ever calls it with Y, per the discussion in the ticket"). Don't undo a choice the user made just because a bot disagrees with it. If a comment makes you doubt a choice and you don't know why it was made, don't guess either way: check the history, and ask the user if it is still unclear.
+
+**Triage each bot comment before touching code.** Read the code the comment points at, plus its callers if the claim depends on them, and check the claim yourself. Then ask:
+
+0. *Was this a deliberate choice?* If the reason is in your context or the repo history, that usually settles it: defend it (see above) unless the comment shows the reasoning no longer holds.
+1. *Is it real?* Can the problem actually occur given how this code is called and what the surrounding code guarantees? If the scenario is unreachable, say so and decline.
+2. *Does it matter?* A bug, a security hole, data loss, a broken contract or a regression is worth fixing. A style preference, a naming opinion, a "consider also handling…", or a theoretical edge case is not, unless the repo's own conventions say otherwise.
+3. *Is the cost proportionate?* Look at what the suggested fix adds: lines, branches, parameters, abstractions, tests, files. A large fix for a small or unlikely problem is a bad trade.
+4. *Is it in scope?* Pre-existing issues and improvements unrelated to this PR's goal belong in a follow-up, not in this diff.
+
+**When the concern is real but the suggested fix is heavy,** fix the actual problem in the simplest way that works (often one line, a clearer name, or a short comment stating the invariant) and say that you chose the smaller fix. Don't paste a bot's suggestion block verbatim just because it is offered; check that it fits the code and is the least you need to do.
+
+**When you decline,** reply in the thread with the reason in one or two sentences: the decision it contradicts, the invariant that makes it unreachable, the convention it conflicts with, or the complexity it isn't worth. A human may read that thread later, so make it stand on its own and keep it calm and factual. Don't argue with the bot or reply to its replies. Resolve the thread, as the merge gate needs zero unresolved threads.
+
+**Handle bot output in bulk, not one comment at a time.** Read the whole batch first. Bots often raise the same point several times, or raise points that contradict each other; answer a duplicate once and point the others at it. Decide the response to the batch as a whole, then make one commit.
+
+**Stop feeding the loop.** If a round of fixes draws a new round of comments that are mostly nits or commentary on the code you just added to satisfy the last round, do not keep going. Decline what doesn't earn its place and move on to the merge gate. Don't add tests or handling purely to quiet a bot.
+
+**Keep the user in control.** You may decline a bot comment on your own judgment without asking. Don't extend that to human reviewers: a human's disagreement is still the "ask" case, even when a bot is echoing them. If a bot claims a security or correctness problem and you decline it, be more careful than usual: write the evidence in the reply (the call path, the guard, the test that covers it), and list it in the final summary so the user can overrule you. If a bot raises a real design concern that would change the PR's approach, that is a "bigger" comment: ask the user rather than either rewriting or dismissing it.
 
 ### Waiting
 
@@ -213,7 +244,7 @@ Never use `--admin` or otherwise bypass branch protection yourself. If GitHub re
 - The PR was closed or merged by someone else
 - No progress for a long stretch (about 2 hours): report the current state and what it is waiting on
 
-When the babysit ends, whether merged or paused, give a short summary: what failed and how it was fixed, which comments were fixed or answered, what is still open, and the merge commit if merged.
+When the babysit ends, whether merged or paused, give a short summary: what failed and how it was fixed, which comments were fixed or answered (with each bot suggestion you declined and the one-line reason, so the user can overrule), what is still open, and the merge commit if merged.
 
 ---
 
